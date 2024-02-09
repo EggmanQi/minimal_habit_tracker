@@ -17,8 +17,13 @@ const AppSettingsSchema = CollectionSchema(
   name: r'AppSettings',
   id: -5633561779022347008,
   properties: {
-    r'firstLaunchDate': PropertySchema(
+    r'calendarMode': PropertySchema(
       id: 0,
+      name: r'calendarMode',
+      type: IsarType.bool,
+    ),
+    r'firstLaunchDate': PropertySchema(
+      id: 1,
       name: r'firstLaunchDate',
       type: IsarType.dateTime,
     )
@@ -52,7 +57,8 @@ void _appSettingsSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.firstLaunchDate);
+  writer.writeBool(offsets[0], object.calendarMode);
+  writer.writeDateTime(offsets[1], object.firstLaunchDate);
 }
 
 AppSettings _appSettingsDeserialize(
@@ -62,7 +68,8 @@ AppSettings _appSettingsDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = AppSettings();
-  object.firstLaunchDate = reader.readDateTimeOrNull(offsets[0]);
+  object.calendarMode = reader.readBool(offsets[0]);
+  object.firstLaunchDate = reader.readDateTimeOrNull(offsets[1]);
   object.id = id;
   return object;
 }
@@ -75,6 +82,8 @@ P _appSettingsDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
+      return (reader.readBool(offset)) as P;
+    case 1:
       return (reader.readDateTimeOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -174,6 +183,16 @@ extension AppSettingsQueryWhere
 
 extension AppSettingsQueryFilter
     on QueryBuilder<AppSettings, AppSettings, QFilterCondition> {
+  QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
+      calendarModeEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'calendarMode',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterFilterCondition>
       firstLaunchDateIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -310,6 +329,19 @@ extension AppSettingsQueryLinks
 
 extension AppSettingsQuerySortBy
     on QueryBuilder<AppSettings, AppSettings, QSortBy> {
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByCalendarMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'calendarMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      sortByCalendarModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'calendarMode', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> sortByFirstLaunchDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'firstLaunchDate', Sort.asc);
@@ -326,6 +358,19 @@ extension AppSettingsQuerySortBy
 
 extension AppSettingsQuerySortThenBy
     on QueryBuilder<AppSettings, AppSettings, QSortThenBy> {
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByCalendarMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'calendarMode', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AppSettings, AppSettings, QAfterSortBy>
+      thenByCalendarModeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'calendarMode', Sort.desc);
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QAfterSortBy> thenByFirstLaunchDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'firstLaunchDate', Sort.asc);
@@ -354,6 +399,12 @@ extension AppSettingsQuerySortThenBy
 
 extension AppSettingsQueryWhereDistinct
     on QueryBuilder<AppSettings, AppSettings, QDistinct> {
+  QueryBuilder<AppSettings, AppSettings, QDistinct> distinctByCalendarMode() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'calendarMode');
+    });
+  }
+
   QueryBuilder<AppSettings, AppSettings, QDistinct>
       distinctByFirstLaunchDate() {
     return QueryBuilder.apply(this, (query) {
@@ -367,6 +418,12 @@ extension AppSettingsQueryProperty
   QueryBuilder<AppSettings, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<AppSettings, bool, QQueryOperations> calendarModeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'calendarMode');
     });
   }
 

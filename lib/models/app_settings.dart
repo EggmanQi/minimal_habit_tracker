@@ -5,4 +5,17 @@ part 'app_settings.g.dart';
 class AppSettings {
   Id id = Isar.autoIncrement;
   DateTime? firstLaunchDate;
+
+  @enumerated
+  late bool calendarMode;
 }
+
+// enum CalendarModeEnum {
+//   day(1),
+//   week(2),
+//   month(3);
+
+//   const CalendarModeEnum(this.myValue);
+
+//   final short myValue;
+// }

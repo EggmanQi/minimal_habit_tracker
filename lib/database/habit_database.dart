@@ -6,8 +6,8 @@ import 'package:path_provider/path_provider.dart';
 
 class HabitDatabase extends ChangeNotifier {
   static late Isar isar;
-  // setup
 
+  // setup
   // initialize
   static Future<void> initialize() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -19,7 +19,7 @@ class HabitDatabase extends ChangeNotifier {
     final existingSettings = await isar.appSettings.where().findFirst();
     if (existingSettings == null) {
       final settings = AppSettings()..firstLaunchDate = DateTime.now();
-
+      settings.calendarMode = true;
       await isar.writeTxn(() => isar.appSettings.put(settings)); // 等价于下方的注释代码
       // await isar.writeTxn(() async {
       //   await isar.appSettings.put(settings);
@@ -30,7 +30,21 @@ class HabitDatabase extends ChangeNotifier {
   // get first date
   Future<DateTime?> getFirstLaunchDate() async {
     final settings = await isar.appSettings.where().findFirst();
+    // if (settings == null) {
+    //   saveFirstLaunchDate();
+    // }
     return settings?.firstLaunchDate;
+  }
+
+  late bool currenCalendarModeIsWeek = true;
+  Future<void> switchCalendarMode() async {
+    final settings = await isar.appSettings.where().findFirst();
+    if (settings != null) {
+      settings.calendarMode = !settings.calendarMode;
+      currenCalendarModeIsWeek = settings.calendarMode;
+      await isar.writeTxn(() => isar.appSettings.put(settings));
+    }
+    readHabits();
   }
 
   // CRUD x operations
@@ -50,6 +64,7 @@ class HabitDatabase extends ChangeNotifier {
     List<Habit> fetchedHabits = await isar.habits.where().findAll();
     currenHabits.clear();
     currenHabits.addAll(fetchedHabits);
+    notifyListeners();
   }
 
   //  - Update
@@ -68,8 +83,8 @@ class HabitDatabase extends ChangeNotifier {
               date.month == todayDateTime.month &&
               date.day == todayDateTime.day);
         }
+        await isar.habits.put(habit);
       });
-      await isar.habits.put(habit);
     }
 
     readHabits();
@@ -92,9 +107,12 @@ class HabitDatabase extends ChangeNotifier {
     await isar.writeTxn(() async {
       await isar.habits.delete(id);
     });
+    readHabits();
   }
 
   Future<Habit?> loadHabit(int id) async {
     return await isar.habits.get(id);
   }
+
+  // void change
 }
